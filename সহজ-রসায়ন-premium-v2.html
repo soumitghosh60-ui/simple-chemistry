@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>সহজ রসায়ন ২০২৬</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --acid: #39ff14;
+  --plasma: #ff6b35;
+  --neutron: #00d4ff;
+  --electron: #bf5fff;
+  --gold: #ffd700;
+  --dark: #04080f;
+  --dark2: #080f1a;
+  --card: rgba(8, 20, 40, 0.92);
+  --border-glow: rgba(57, 255, 20, 0.25);
+  --mono: 'Share Tech Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Hind Siliguri', sans-serif;
+  background: var(--dark);
+  color: #c8e6c9;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ══════════════════════════════════
+   ANIMATED CHEMISTRY BACKGROUND
+══════════════════════════════════ */
+.bg-canvas {
+  position: fixed; inset: 0; z-index: 0; overflow: hidden;
+}
+
+/* Hexagonal grid pattern */
+.bg-canvas::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(57,255,20,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(0,212,255,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(191,95,255,0.04) 0%, transparent 60%);
+  animation: bgPulse 8s ease-in-out infinite alternate;
+}
+
+@keyframes bgPulse {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+
+/* Periodic table floating tiles */
+.pt-tile {
+  position: absolute;
+  width: 52px; height: 52px;
+  border: 1px solid rgba(57,255,20,0.15);
+  border-radius: 6px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-family: var(--mono);
+  animation: floatTile linear infinite;
+  opacity: 0;
+  pointer-events: none;
+  background: rgba(57,255,20,0.03);
+}
+.pt-tile .sym { font-size: 18px; font-weight: 700; color: rgba(57,255,20,0.5); }
+.pt-tile .num { font-size: 9px; color: rgba(57,255,20,0.3); }
+
+@keyframes floatTile {
+  0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 1; }
+  100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+}
+
+/* Molecule bond lines */
+.mol-svg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none;
+}
+
+/* Atom orbits */
+.atom-wrap {
+  position: absolute;
+  pointer-events: none;
+  animation: driftAtom 20s ease-in-out infinite;
+}
+@keyframes driftAtom {
+  0%,100% { transform: translate(0,0); }
+  25%  { transform: translate(30px,-20px); }
+  50%  { transform: translate(-20px,30px); }
+  75%  { transform: translate(20px,20px); }
+}
+.atom-core {
+  border-radius: 50%;
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  box-shadow: 0 0 20px currentColor;
+}
+.orbit-ring {
+  position: absolute; top: 50%; left: 50%;
+  border-radius: 50%;
+  border: 1px solid;
+  transform-origin: center;
+  animation: spinOrbit linear infinite;
+}
+@keyframes spinOrbit {
+  from { transform: translate(-50%,-50%) rotate(0deg); }
+  to   { transform: translate(-50%,-50%) rotate(360deg); }
+}
+.orbit-electron {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  position: absolute; top: -3px; left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* ══════════════════════════════════
+   MAIN LAYOUT
+══════════════════════════════════ */
+.wrapper {
+  position: relative; z-index: 10;
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 30px 16px 50px;
+}
+
+/* ══════════════════════════════════
+   HERO HEADER
+══════════════════════════════════ */
+.hero {
+  width: 100%; max-width: 640px;
+  text-align: center;
+  margin-bottom: 30px;
+  animation: fadeDown 0.8s ease forwards;
+}
+
+@keyframes fadeDown {
+  from { opacity:0; transform: translateY(-30px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+.hero-formula {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: rgba(57,255,20,0.5);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.hero-title {
+  font-family: 'Exo 2', sans-serif;
+  font-size: clamp(32px, 8vw, 56px);
+  font-weight: 900;
+  line-height: 1;
+  position: relative;
+  display: inline-block;
+}
+
+.hero-title .bn { 
+  display: block;
+  background: linear-gradient(135deg, var(--acid) 0%, #00ff88 40%, var(--neutron) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 20px rgba(57,255,20,0.4));
+}
+
+.hero-title .yr {
+  display: block;
+  font-size: 0.5em;
+  font-weight: 300;
+  color: rgba(200,230,200,0.5);
+  -webkit-text-fill-color: rgba(200,230,200,0.5);
+  letter-spacing: 8px;
+  margin-top: 4px;
+  filter: none;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 16px;
+  padding: 6px 18px;
+  border: 1px solid rgba(57,255,20,0.3);
+  border-radius: 30px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--acid);
+  background: rgba(57,255,20,0.05);
+  letter-spacing: 2px;
+}
+.hero-badge::before { content: '⬡'; font-size: 14px; }
+
+/* ══════════════════════════════════
+   INFO CARD — periodic element style
+══════════════════════════════════ */
+.info-card {
+  width: 100%; max-width: 640px;
+  background: var(--card);
+  border: 1px solid rgba(57,255,20,0.2);
+  border-radius: 20px;
+  padding: 28px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  animation: fadeUp 0.9s 0.1s ease both;
+  backdrop-filter: blur(20px);
+}
+
+.info-card::before {
+  content: 'CH';
+  position: absolute; top: -10px; right: 20px;
+  font-family: var(--mono);
+  font-size: 80px; font-weight: 900;
+  color: rgba(57,255,20,0.04);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.info-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--acid), var(--neutron), transparent);
+  animation: scanline 3s linear infinite;
+}
+
+@keyframes scanline {
+  0%   { opacity: 0.3; transform: scaleX(0.3); }
+  50%  { opacity: 1;   transform: scaleX(1); }
+  100% { opacity: 0.3; transform: scaleX(0.3); }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.info-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px;
+  background: rgba(57,255,20,0.04);
+  border: 1px solid rgba(57,255,20,0.1);
+  border-radius: 12px;
+  transition: border-color 0.3s, background 0.3s;
+}
+.info-item:hover {
+  border-color: rgba(57,255,20,0.3);
+  background: rgba(57,255,20,0.08);
+}
+.info-item:first-child { grid-column: 1/-1; }
+
+.info-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  background: rgba(57,255,20,0.08);
+  border: 1px solid rgba(57,255,20,0.15);
+  flex-shrink: 0;
+}
+
+.info-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--acid);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.info-value {
+  font-size: 14px;
+  color: #e8f5e9;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* ══════════════════════════════════
+   MAIN PORTAL CARD
+══════════════════════════════════ */
+.portal-card {
+  width: 100%; max-width: 640px;
+  background: var(--card);
+  border: 1px solid rgba(57,255,20,0.2);
+  border-radius: 24px;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  animation: fadeUp 1s 0.2s ease both;
+  box-shadow: 0 0 60px rgba(57,255,20,0.05), 0 30px 80px rgba(0,0,0,0.6);
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(30px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════
+   TAB NAV — element selector style
+══════════════════════════════════ */
+.tab-nav {
+  display: flex;
+  background: rgba(4,8,15,0.8);
+  border-bottom: 1px solid rgba(57,255,20,0.1);
+  padding: 0;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 18px 10px;
+  border: none;
+  background: transparent;
+  color: rgba(200,230,200,0.4);
+  cursor: pointer;
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.3s;
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  letter-spacing: 0.5px;
+}
+
+.tab-btn .tab-el {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: rgba(57,255,20,0.3);
+  letter-spacing: 2px;
+  transition: color 0.3s;
+}
+
+.tab-btn::after {
+  content: '';
+  position: absolute; bottom: 0; left: 20%; right: 20%;
+  height: 2px;
+  background: var(--acid);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+  border-radius: 2px 2px 0 0;
+}
+
+.tab-btn.active {
+  color: var(--acid);
+  background: rgba(57,255,20,0.05);
+}
+.tab-btn.active .tab-el { color: rgba(57,255,20,0.6); }
+.tab-btn.active::after { transform: scaleX(1); }
+
+/* ══════════════════════════════════
+   SECTIONS
+══════════════════════════════════ */
+.section {
+  display: none;
+  padding: 32px 28px;
+  animation: sectionIn 0.4s ease forwards;
+}
+.section.active { display: block; }
+
+@keyframes sectionIn {
+  from { opacity:0; transform: translateX(10px); }
+  to   { opacity:1; transform: translateX(0); }
+}
+
+/* ══════════════════════════════════
+   FORM ELEMENTS
+══════════════════════════════════ */
+.field-group { margin-bottom: 20px; }
+
+.field-label {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--acid);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.field-label::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--acid);
+  box-shadow: 0 0 8px var(--acid);
+  display: inline-block;
+}
+
+.field-row { display: flex; gap: 14px; }
+.field-row .field-group { flex: 1; }
+
+input[type="text"],
+input[type="number"],
+input[type="tel"],
+input[type="password"],
+select {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(4,8,15,0.8);
+  border: 1px solid rgba(57,255,20,0.15);
+  border-radius: 10px;
+  color: #e8f5e9;
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s;
+  -webkit-appearance: none;
+}
+
+input:focus, select:focus {
+  border-color: var(--acid);
+  background: rgba(57,255,20,0.04);
+  box-shadow: 0 0 0 3px rgba(57,255,20,0.1), 0 0 20px rgba(57,255,20,0.1);
+}
+
+select option { background: #080f1a; color: #e8f5e9; }
+
+/* ══════════════════════════════════
+   BUTTONS
+══════════════════════════════════ */
+.btn-primary {
+  width: 100%;
+  padding: 17px;
+  background: transparent;
+  border: 1px solid var(--acid);
+  border-radius: 12px;
+  color: var(--acid);
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(57,255,20,0.15), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s;
+}
+
+.btn-primary:hover::before { transform: translateX(100%); }
+
+.btn-primary:hover {
+  background: rgba(57,255,20,0.1);
+  box-shadow: 0 0 30px rgba(57,255,20,0.3), 0 0 60px rgba(57,255,20,0.1);
+  transform: translateY(-1px);
+}
+.btn-primary:active { transform: translateY(0); }
+
+/* ══════════════════════════════════
+   RESULT BOX
+══════════════════════════════════ */
+#resOutput { margin-top: 20px; }
+
+.result-card {
+  background: rgba(4,8,15,0.9);
+  border: 1px solid rgba(57,255,20,0.3);
+  border-radius: 16px;
+  padding: 28px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.result-card::before {
+  content: 'RESULT';
+  position: absolute; top: 10px; right: 14px;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: rgba(57,255,20,0.2);
+  letter-spacing: 3px;
+}
+
+.res-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.res-meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: rgba(200,230,200,0.4);
+  letter-spacing: 1px;
+  margin-bottom: 24px;
+}
+
+.marks-display {
+  position: relative;
+  display: inline-block;
+  margin: 10px 0;
+}
+.marks-ring {
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  border: 2px solid rgba(57,255,20,0.3);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  position: relative;
+  margin: 0 auto;
+}
+.marks-ring::before {
+  content: '';
+  position: absolute; inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(57,255,20,0.1);
+}
+.marks-num {
+  font-family: var(--mono);
+  font-size: 36px;
+  color: var(--acid);
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: 0 0 20px var(--acid);
+}
+.marks-lbl {
+  font-size: 10px;
+  color: rgba(57,255,20,0.5);
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+.res-pending {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: rgba(200,230,200,0.4);
+  padding: 20px;
+  border: 1px dashed rgba(200,230,200,0.15);
+  border-radius: 10px;
+  letter-spacing: 2px;
+}
+
+.res-error {
+  padding: 16px;
+  border-radius: 10px;
+  background: rgba(255,80,80,0.08);
+  border: 1px solid rgba(255,80,80,0.2);
+  color: #ff8080;
+  font-size: 14px;
+  font-family: var(--mono);
+  letter-spacing: 1px;
+}
+
+.loading-msg {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--acid);
+  letter-spacing: 3px;
+  text-align: center;
+  padding: 20px;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+  50% { opacity: 0.3; }
+}
+
+/* ══════════════════════════════════
+   ADMIN PANEL
+══════════════════════════════════ */
+.admin-login-wrap {
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.admin-panel { display: none; }
+
+.admin-stat-row {
+  display: flex; gap: 12px; margin-bottom: 20px;
+}
+.admin-stat {
+  flex: 1;
+  padding: 16px;
+  background: rgba(4,8,15,0.8);
+  border: 1px solid rgba(57,255,20,0.15);
+  border-radius: 12px;
+  text-align: center;
+}
+.admin-stat-num {
+  font-family: var(--mono);
+  font-size: 28px;
+  color: var(--acid);
+  font-weight: 700;
+  display: block;
+  text-shadow: 0 0 15px var(--acid);
+}
+.admin-stat-lbl {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: rgba(57,255,20,0.4);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 4px;
+  display: block;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(57,255,20,0.1);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 440px;
+}
+
+thead th {
+  padding: 12px 14px;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: rgba(57,255,20,0.5);
+  text-transform: uppercase;
+  background: rgba(57,255,20,0.04);
+  border-bottom: 1px solid rgba(57,255,20,0.1);
+}
+
+tbody tr {
+  border-bottom: 1px solid rgba(57,255,20,0.05);
+  transition: background 0.2s;
+}
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: rgba(57,255,20,0.03); }
+
+tbody td {
+  padding: 12px 14px;
+  color: #c8e6c9;
+  vertical-align: middle;
+}
+
+.td-serial { font-family: var(--mono); color: rgba(57,255,20,0.3); font-size: 11px; }
+.td-name { font-weight: 600; color: #e8f5e9; }
+.td-roll { font-family: var(--mono); font-size: 12px; color: var(--neutron); }
+
+.marks-pill {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+}
+.marks-pill.has-marks {
+  background: rgba(57,255,20,0.12);
+  border: 1px solid rgba(57,255,20,0.25);
+  color: var(--acid);
+}
+.marks-pill.pending {
+  background: rgba(200,230,200,0.04);
+  border: 1px dashed rgba(200,230,200,0.1);
+  color: rgba(200,230,200,0.3);
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+/* ══════════════════════════════════
+   ADMIN RESULT EDIT
+══════════════════════════════════ */
+.edit-marks-wrap {
+  display: flex; align-items: center; gap: 6px;
+}
+.edit-marks-input {
+  width: 72px !important;
+  padding: 6px 8px !important;
+  font-size: 13px !important;
+  border-radius: 7px !important;
+  text-align: center;
+  background: rgba(4,8,15,0.9) !important;
+  border: 1px solid rgba(57,255,20,0.25) !important;
+  color: #e8f5e9 !important;
+}
+.edit-marks-input:focus {
+  border-color: var(--acid) !important;
+  box-shadow: 0 0 0 2px rgba(57,255,20,0.15) !important;
+}
+.btn-save-marks {
+  padding: 6px 12px;
+  background: rgba(57,255,20,0.1);
+  border: 1px solid rgba(57,255,20,0.35);
+  border-radius: 7px;
+  color: var(--acid);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.25s;
+  white-space: nowrap;
+}
+.btn-save-marks:hover {
+  background: rgba(57,255,20,0.2);
+  box-shadow: 0 0 12px rgba(57,255,20,0.3);
+}
+.btn-save-marks:disabled {
+  opacity: 0.4; cursor: not-allowed;
+}
+.save-ok  { color: var(--acid);   font-family: var(--mono); font-size: 11px; letter-spacing:1px; }
+.save-err { color: #ff8080; font-family: var(--mono); font-size: 11px; }
+
+
+.footer {
+  width: 100%; max-width: 640px;
+  margin-top: 30px;
+  text-align: center;
+  animation: fadeUp 1.2s 0.3s ease both;
+}
+
+.footer-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(57,255,20,0.2), transparent);
+  margin-bottom: 20px;
+}
+
+.footer-dev {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: rgba(200,230,200,0.25);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.footer-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: rgba(200,230,200,0.7);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.footer-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 18px;
+  border: 1px solid rgba(57,255,20,0.2);
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--acid);
+  letter-spacing: 3px;
+  background: rgba(57,255,20,0.03);
+  position: relative;
+  overflow: hidden;
+}
+.footer-badge::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(57,255,20,0.08), transparent);
+  animation: shimmer 3s linear infinite;
+}
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+.footer-badge .node-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--acid);
+  box-shadow: 0 0 8px var(--acid);
+  animation: nodePulse 1.5s ease-in-out infinite;
+}
+@keyframes nodePulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:0.4; transform:scale(0.6); }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ CHEMISTRY BACKGROUND ══ -->
+<div class="bg-canvas">
+  <!-- Floating periodic table tiles -->
+  <div class="pt-tile" style="left:5%; animation-duration:18s; animation-delay:0s;"><span class="sym">H</span><span class="num">1</span></div>
+  <div class="pt-tile" style="left:15%; animation-duration:22s; animation-delay:3s;"><span class="sym">C</span><span class="num">6</span></div>
+  <div class="pt-tile" style="left:28%; animation-duration:16s; animation-delay:6s;"><span class="sym">N</span><span class="num">7</span></div>
+  <div class="pt-tile" style="left:42%; animation-duration:25s; animation-delay:1s;"><span class="sym">O</span><span class="num">8</span></div>
+  <div class="pt-tile" style="left:58%; animation-duration:19s; animation-delay:8s;"><span class="sym">Na</span><span class="num">11</span></div>
+  <div class="pt-tile" style="left:70%; animation-duration:21s; animation-delay:4s;"><span class="sym">Cl</span><span class="num">17</span></div>
+  <div class="pt-tile" style="left:82%; animation-duration:17s; animation-delay:10s;"><span class="sym">Fe</span><span class="num">26</span></div>
+  <div class="pt-tile" style="left:92%; animation-duration:23s; animation-delay:2s;"><span class="sym">Cu</span><span class="num">29</span></div>
+  <div class="pt-tile" style="left:35%; animation-duration:20s; animation-delay:14s;"><span class="sym">Au</span><span class="num">79</span></div>
+  <div class="pt-tile" style="left:75%; animation-duration:15s; animation-delay:7s;"><span class="sym">Ag</span><span class="num">47</span></div>
+
+  <!-- Atom 1 (green) -->
+  <div class="atom-wrap" style="top:15%; left:8%; width:80px; height:80px; animation-duration:18s;">
+    <div class="atom-core" style="width:12px;height:12px;background:var(--acid);color:var(--acid);"></div>
+    <div class="orbit-ring" style="width:60px;height:60px;border-color:rgba(57,255,20,0.2);animation-duration:4s;">
+      <div class="orbit-electron" style="background:var(--acid);color:var(--acid);"></div>
+    </div>
+    <div class="orbit-ring" style="width:80px;height:80px;border-color:rgba(57,255,20,0.1);animation-duration:7s;animation-direction:reverse;">
+      <div class="orbit-electron" style="background:rgba(57,255,20,0.6);color:var(--acid);"></div>
+    </div>
+  </div>
+
+  <!-- Atom 2 (cyan) -->
+  <div class="atom-wrap" style="top:60%; right:6%; width:100px; height:100px; animation-duration:25s; animation-direction:reverse;">
+    <div class="atom-core" style="width:14px;height:14px;background:var(--neutron);color:var(--neutron);"></div>
+    <div class="orbit-ring" style="width:70px;height:70px;border-color:rgba(0,212,255,0.2);animation-duration:5s;">
+      <div class="orbit-electron" style="background:var(--neutron);color:var(--neutron);"></div>
+    </div>
+    <div class="orbit-ring" style="width:100px;height:100px;border-color:rgba(0,212,255,0.1);animation-duration:8s;animation-direction:reverse;">
+      <div class="orbit-electron" style="background:rgba(0,212,255,0.6);color:var(--neutron);"></div>
+    </div>
+  </div>
+
+  <!-- Atom 3 (purple) -->
+  <div class="atom-wrap" style="top:30%; right:4%; width:60px; height:60px; animation-duration:15s;">
+    <div class="atom-core" style="width:8px;height:8px;background:var(--electron);color:var(--electron);"></div>
+    <div class="orbit-ring" style="width:50px;height:50px;border-color:rgba(191,95,255,0.2);animation-duration:3s;">
+      <div class="orbit-electron" style="background:var(--electron);color:var(--electron);"></div>
+    </div>
+  </div>
+
+  <!-- Molecule SVG bonds -->
+  <svg class="mol-svg" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="2" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <!-- H2O molecule outline -->
+    <g opacity="0.12" filter="url(#glow)">
+      <circle cx="85%" cy="75%" r="14" fill="none" stroke="#39ff14" stroke-width="1"/>
+      <circle cx="calc(85% - 35px)" cy="calc(75% + 20px)" r="10" fill="none" stroke="#39ff14" stroke-width="1"/>
+      <circle cx="calc(85% + 35px)" cy="calc(75% + 20px)" r="10" fill="none" stroke="#39ff14" stroke-width="1"/>
+      <line x1="83%" y1="76%" x2="80%" y2="78%" stroke="#39ff14" stroke-width="1"/>
+      <line x1="87%" y1="76%" x2="90%" y2="78%" stroke="#39ff14" stroke-width="1"/>
+    </g>
+  </svg>
+</div>
+
+<!-- ══ MAIN CONTENT ══ -->
+<div class="wrapper">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-formula">HSC · 2026 · MODEL TEST · CHEMISTRY</div>
+    <h1 class="hero-title">
+      <span class="bn">সহজ রসায়ন</span>
+      <span class="yr">২০২৬</span>
+    </h1>
+    <div class="hero-badge">রেজিস্ট্রেশন ও ফলাফল পোর্টাল</div>
+  </div>
+
+  <!-- INFO CARD -->
+  <div class="info-card">
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-icon">🔬</div>
+        <div>
+          <div class="info-label">ব্যাচ</div>
+          <div class="info-value">এইচএসসি ২০২৬ — মডেল টেস্ট ব্যাচ</div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">📅</div>
+        <div>
+          <div class="info-label">পরীক্ষার তারিখ</div>
+          <div class="info-value">15/05/26 (CH-1)<br>22/05/26 (CH-2)</div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">📍</div>
+        <div>
+          <div class="info-label">ঠিকানা</div>
+          <div class="info-value">দক্ষিণ কলিমাবাদ, মৌলভীবাজার</div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">💬</div>
+        <div>
+          <div class="info-label">হোয়াটসঅ্যাপ</div>
+          <div class="info-value">01916576187</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PORTAL CARD -->
+  <div class="portal-card">
+
+    <!-- TAB NAV -->
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="showTab('reg')">
+        <span class="tab-el">REG</span>
+        রেজিস্ট্রেশন
+      </button>
+      <button class="tab-btn" onclick="showTab('adm')">
+        <span class="tab-el">ADM</span>
+        অ্যাডমিন
+      </button>
+    </div>
+
+    <!-- REGISTRATION -->
+    <div id="reg-sec" class="section active">
+      <form id="regForm">
+        <div class="field-group">
+          <div class="field-label">শিক্ষার্থীর পূর্ণ নাম</div>
+          <input type="text" id="rName" placeholder="আপনার নাম লিখুন" required>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <div class="field-label">ব্যাচ</div>
+            <select id="rBatch">
+              <option>HSC-2025</option>
+              <option selected>HSC-2026</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <div class="field-label">এইচএসসি রোল</div>
+            <input type="text" inputmode="numeric" id="rRoll" placeholder="রোল নম্বর" required>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">মোবাইল নম্বর</div>
+          <input type="tel" id="rWA" placeholder="01XXXXXXXXX" required>
+        </div>
+
+        <button type="submit" class="btn-primary" id="btnReg">
+          ⬡ রেজিস্ট্রেশন সম্পন্ন করুন
+        </button>
+      </form>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="adm-sec" class="section">
+      <div class="admin-login-wrap" id="loginBox">
+        <div class="field-group">
+          <div class="field-label">অ্যাডমিন পিন</div>
+          <input type="password" id="pin" placeholder="••••••••" style="text-align:center; letter-spacing:4px;">
+        </div>
+        <button class="btn-primary" onclick="adminLogin()">⬡ লগইন</button>
+      </div>
+
+      <div class="admin-panel" id="admPanel">
+        <div class="admin-stat-row" id="admStats"></div>
+        <div class="admin-table-wrap" id="admData"></div>
+      </div>
+    </div>
+
+  </div><!-- /portal-card -->
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-line"></div>
+    <div class="footer-dev">Developed &amp; Secured By</div>
+    <div class="footer-name">সৌমিত ঘোষ</div>
+    <div class="footer-badge">
+      <div class="node-dot"></div>
+      ZeroNode SECURITY
+      <div class="node-dot"></div>
+    </div>
+  </div>
+
+</div><!-- /wrapper -->
+
+<script>
+const API = 'https://sheetdb.io/api/v1/qg3zctmopc4a7';
+
+/* ── ট্যাব ── */
+function showTab(t) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const map = { reg: 0, adm: 1 };
+  document.querySelectorAll('.tab-btn')[map[t]].classList.add('active');
+  document.getElementById(t + '-sec').classList.add('active');
+}
+
+/* ── রেজিস্ট্রেশন ── */
+document.getElementById('regForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn   = document.getElementById('btnReg');
+  const roll  = document.getElementById('rRoll').value.trim();
+  const phone = document.getElementById('rWA').value.trim();
+
+  if (!/^01[3-9]\d{8}$/.test(phone)) {
+    alert('❌ সঠিক মোবাইল নম্বর দিন (01XXXXXXXXX)');
+    return;
+  }
+
+  btn.textContent = '◌ যাচাই করা হচ্ছে...';
+  btn.disabled = true;
+
+  try {
+    const chk  = await fetch(API);
+    const list = await chk.json();
+    const dup  = list.find(x =>
+      String(x.HSC_Roll    || '').trim() === roll ||
+      String(x.WhatsApp_No || '').trim() === phone
+    );
+    if (dup) {
+      alert(String(dup.HSC_Roll || '').trim() === roll
+        ? `❌ এই রোল (${roll}) দিয়ে ইতিমধ্যে রেজিস্ট্রেশন হয়েছে!`
+        : `❌ এই মোবাইল নম্বর দিয়ে ইতিমধ্যে রেজিস্ট্রেশন হয়েছে!`
+      );
+      btn.textContent = '⬡ রেজিস্ট্রেশন সম্পন্ন করুন';
+      btn.disabled = false;
+      return;
+    }
+
+    btn.textContent = '◌ সিঙ্ক্রোনাইজিং...';
+    const payload = { data: [{
+      Name:        document.getElementById('rName').value.trim(),
+      HSC_Roll:    roll,
+      WhatsApp_No: phone,
+      Batch:       document.getElementById('rBatch').value,
+      Marks:       'অপেক্ষমান'
+    }]};
+
+    const res = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error();
+    alert('✅ সফলভাবে রেজিস্ট্রেশন হয়েছে!');
+    location.reload();
+  } catch {
+    alert('❌ সার্ভার ত্রুটি! পুনরায় চেষ্টা করুন।');
+    btn.textContent = '⬡ রেজিস্ট্রেশন সম্পন্ন করুন';
+    btn.disabled = false;
+  }
+});
+
+// ── ADMIN ──
+function adminLogin() {
+  if (document.getElementById('pin').value === 'admin123') {
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('admPanel').style.display = 'block';
+    loadAdmin();
+  } else {
+    alert('❌ ভুল পিন!');
+  }
+}
+
+async function loadAdmin() {
+  const admData  = document.getElementById('admData');
+  const admStats = document.getElementById('admStats');
+  admData.innerHTML = `<div class="loading-msg" style="padding:30px;">LOADING...</div>`;
+
+  try {
+    const res  = await fetch(API);
+    if (!res.ok) throw new Error();
+    const raw  = await res.json();
+
+    /* একই রোল একাধিকবার থাকলে শুধু শেষেরটা রাখো */
+    const seen = new Set();
+    const data = raw.slice().reverse().filter(r => {
+      const key = String(r.HSC_Roll || '').trim();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    const total   = data.length;
+    const pending = data.filter(r => !r.Marks || r.Marks === 'অপেক্ষমান' || r.Marks === 'undefined').length;
+    const done    = total - pending;
+
+    admStats.innerHTML = `
+      <div class="admin-stat">
+        <span class="admin-stat-num">${total}</span>
+        <span class="admin-stat-lbl">মোট</span>
+      </div>
+      <div class="admin-stat">
+        <span class="admin-stat-num" style="color:var(--acid);">${done}</span>
+        <span class="admin-stat-lbl">ফলাফল প্রকাশ</span>
+      </div>
+      <div class="admin-stat">
+        <span class="admin-stat-num" style="color:rgba(200,230,200,0.4);">${pending}</span>
+        <span class="admin-stat-lbl">অপেক্ষমান</span>
+      </div>`;
+
+    let html = `<table>
+      <thead><tr>
+        <th>#</th><th>নাম</th><th>রোল</th><th>ব্যাচ</th><th>মোবাইল</th><th>নম্বর / এড</th>
+      </tr></thead><tbody>`;
+
+    data.forEach((row, i) => {
+      const rowSerial = i + 1;
+      const name  = row['Name']        || '—';
+      const roll  = row['HSC_Roll']    || '—';
+      const batch = row['Batch']       || '—';
+      /* ফোন সরাসরি দেখাবে */
+      const phone = row['WhatsApp_No'] || '—';
+      const marks = row['Marks']       || '';
+      const isValid = marks && marks !== 'undefined' && marks !== 'অপেক্ষমান';
+
+      const marksCell = isValid
+        ? `<div class="edit-marks-wrap">
+             <span class="marks-pill has-marks">${marks}</span>
+             <input class="edit-marks-input" type="text" value="${marks}" id="mi_${roll}">
+             <button class="btn-save-marks" onclick="saveMarks('${roll}')">আপডেট</button>
+           </div>`
+        : `<div class="edit-marks-wrap">
+             <input class="edit-marks-input" type="text" id="mi_${roll}" placeholder="নম্বর">
+             <button class="btn-save-marks" onclick="saveMarks('${roll}')">এড করুন</button>
+           </div>`;
+
+      html += `<tr id="tr_${roll}">
+        <td class="td-serial">${rowSerial}</td>
+        <td class="td-name">${name}</td>
+        <td class="td-roll">${roll}</td>
+        <td style="font-size:11px;color:rgba(200,230,200,0.4);">${batch}</td>
+        <td style="font-size:12px;color:rgba(0,212,255,0.8);font-family:var(--mono);">${phone}</td>
+        <td id="td_${roll}">${marksCell}</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+    admData.innerHTML = html;
+
+  } catch {
+    admData.innerHTML = `<div class="res-error">⚠ ডেটা লোড করা যায়নি</div>`;
+  }
+}
+
+/* ── নম্বর সেভ / আপডেট ── */
+async function saveMarks(roll) {
+  const input = document.getElementById('mi_' + roll);
+  const td    = document.getElementById('td_' + roll);
+  const marks = input ? input.value.trim() : '';
+  const btn   = input ? input.nextElementSibling : null;
+
+  if (!marks) { alert('নম্বর লিখুন'); return; }
+  if (btn) { btn.textContent = '...'; btn.disabled = true; }
+
+  try {
+    const res = await fetch(`${API}/HSC_Roll/${encodeURIComponent(roll)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: { Marks: marks } })
+    });
+    if (!res.ok) throw new Error();
+
+    if (td) {
+      td.innerHTML = `<div class="edit-marks-wrap">
+        <span class="marks-pill has-marks">${marks}</span>
+        <input class="edit-marks-input" type="text" value="${marks}" id="mi_${roll}">
+        <button class="btn-save-marks" onclick="saveMarks('${roll}')">আপডেট</button>
+      </div>`;
+    }
+  } catch {
+    alert(`❌ সেভ করা যায়নি! (Roll: ${roll})`);
+    if (btn) { btn.textContent = 'এড করুন'; btn.disabled = false; }
+  }
+}
+</script>
+</body>
+</html>
